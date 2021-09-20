@@ -4,7 +4,6 @@ const { formatData } = require("../utils/data-manipulation.js");
 
 const seed = (data) => {
   const { articleData, commentData, topicData, userData } = data;
-
   return db
     .query("DROP TABLE IF EXISTS comments;")
     .then(() => {
@@ -68,7 +67,7 @@ const seed = (data) => {
       const formattedComments = formatData(commentData, keys)
       const queryString = format("INSERT INTO comments (author, article_id, votes, created_at, body) VALUES %L;", formattedComments)
       return db.query(queryString)
-    });
+    })
 };
 
 module.exports = {seed};
