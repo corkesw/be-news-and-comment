@@ -18,6 +18,17 @@ describe('test connection to api router', () => {
     });
 });
 
+describe('test invalid URL response', () => {
+    test('404: should inform user that URL is invalid', () => {
+        return request(app)
+        .get('/api/banana')
+        .expect(404)
+        .then((res) => {
+            expect(res.body.msg).toBe('Invalid URL')
+        })
+    });
+});
+
 describe('/api/topics', () => {
     test('200: should respond with a list of topics', () => {
         return request(app)
