@@ -1,8 +1,8 @@
 const {
-  formatData,
+  formatData, addKeys,
 } = require("../db/utils/data-manipulation");
 
-describe.only("formatData", () => {
+describe("formatData", () => {
   test("should return empty array if passed empty array", () => {
     const input = [];
     const keys = ["username", "name", "avatar_url"];
@@ -150,5 +150,32 @@ describe.only("formatData", () => {
       ["cooking", "Hey good looking, what you got cooking?"],
     ];
     expect(actual).toEqual(expected);
+  });
+});
+
+describe('addKeys', () => {
+  test('should return an empty array when passed an empty array', () => {
+    const objArr = []
+    const key = 'key'
+    const keyValues = []
+    const actual = addKeys(objArr, key, keyValues)
+    const expected = []
+    expect(actual).toEqual(expected)
+  });
+  test('should add key:value to single object', () => {
+    const objArr = [{name: 'Obi'}]
+    const key = 'age'
+    const keyValues = [{id: 1, age: 5}]
+    const actual = addKeys(objArr, key, keyValues)
+    const expected = [{name: 'Obi', age: 4}]
+    expect(actual).toEqual(expected)
+  });
+  test('works for multiple objects', () => {
+    const objArr = [{name: 'Obi'}, {name :'Merlin'}]
+    const key = 'age'
+    const keyValues = [{id:1, age:5}, {id:2, age: 15}]
+    const actual = addKeys(objArr, key, keyValues)
+    const expected = [{name: 'Obi', age: 4}, {name: 'Merlin', age: 14}]
+    expect(actual).toEqual(expected)
   });
 });
