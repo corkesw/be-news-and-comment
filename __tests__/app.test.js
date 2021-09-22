@@ -173,12 +173,82 @@ describe("GET /api/articles", () => {
         expect(res.body.articles).toHaveLength(12);
       });
   });
-  test.only('200: should be sortable by column', () => {
-      return request(app)
+  test("200: should be sortable by column", () => {
+    return request(app)
       .get("/api/articles?sort_by=title")
       .expect(200)
-      .then((res)=> {
-          expect(res.body.articles).toBeSortedBy('title', {descending : true})
+      .then((res) => {
+        expect(res.body.articles).toBeSortedBy("title", { descending: true });
+      });
+  });
+  test("200: should default to being sorted by date", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.articles).toBeSortedBy("created_at", {
+          descending: true,
+        });
+      });
+  });
+  test("200: should be sortable asc or desc", () => {
+    return request(app)
+      .get("/api/articles?order=asc")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.articles).toBeSortedBy("created_at", {
+          descending: false,
+        });
+      });
+  });
+  test("200: should be able to be filtered by topic", () => {
+    return request(app)
+      .get("/api/articles?topic=cats")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.articles).toHaveLength(1);
+      });
+  });
+
+  test("200: should work with multiple queries", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch&sort_by=title&order=asc")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.articles).toHaveLength(11);
+        expect(res.body.articles[0].title).toBe("A");
+        res.body.articles.forEach((article) => {
+          expect(article.topic).toBe("mitch");
+        });
+      });
+  });
+  test('400: should respond with an error if sort_by is not a valid column', () => {
+    return request(app)
+    .get("/api/articles?sort_by=banana")
+    .expect(400)
+    .then((res) => {
+        expect(res.body.msg).toBe('Bad request - cannot sort by unknown column')
+    });
+  });
+  test('400: should respond with error if order is not asc or desc', () => {
+    return request(app)
+    .get("/api/articles?order=any")
+    .expect(400)
+    .then((res) => {
+        expect(res.body.msg).toBe('Bad request - order should be asc or desc')
+    });
+  });
+  test('404: should respond with error if topic is not in the database', () => {
+      return request(app)
+      .get("/api/articles?topic=fish")
+      .expect(404)
+      .then((res) => {
+          expect(res.body.msg).toBe('Not found')
       })
+  });
+  test('204: should respond with no content if topic has no related articles ', () => {
+    return request(app)
+    .get("/api/articles?topic=paper")
+    .expect(204)
   });
 });

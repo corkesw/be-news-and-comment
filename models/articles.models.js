@@ -2,6 +2,7 @@ const db = require("../db/connection.js");
 const format = require("pg-format");
 const request = require("superagent");
 const { addKeys } = require("../db/utils/data-manipulation");
+const { articlesRouter } = require("../routers/articles.router.js");
 
 exports.selectArticleById = async (article_id) => {
   if (isNaN(article_id)) {
@@ -56,18 +57,48 @@ exports.updateArticleById = async (article_id, inc_votes) => {
   return updatedArticle.rows[0];
 };
 
-exports.selectArticles = async (sort_by) => {
+exports.selectArticles = async (
+  sort_by = "created_at",
+  order = "desc",
+  topic
+) => {
+
+    if(topic) {
+        const topicQuery = await db.query(`SELECT * FROM topics WHERE slug = $1;`, [topic])
+        if (topicQuery.rows.length === 0) {
+            return Promise.reject({status:404, msg:'Not found'})
+        }
+    }
+
+    const validColumns = ['author', 'title', 'article_id', 'topic', 'created_at', 'votes', 'comment_count'];
+
+    if (!validColumns.includes(sort_by)) {
+        return Promise.reject({status:400, msg: 'Bad request - cannot sort by unknown column'})
+    }
+
+    if (order !=='asc' && order !=='desc') {
+        return Promise.reject({status:400, msg: 'Bad request - order should be asc or desc'})
+    }
+
   let queryString = `
     SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, COUNT(comments.article_id) AS comment_count FROM articles
     LEFT JOIN comments 
     ON articles.article_id = comments.article_id
-    GROUP BY articles.article_id`;
-  if (sort_by) {
-    queryString += ` ORDER by $1 DESC`;
+    `;
+
+  if (topic) {
+    queryString += ` WHERE articles.topic = $1`;
   }
-  console.log(queryString, sort_by);
+  queryString += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order};`;
 
-  const articles = await db.query(queryString, [sort_by]);
-
-  return articles.rows;
+  if (topic) {
+    const articles = await db.query(queryString, [topic]);
+    if(articles.rows.length === 0) {
+        return Promise.reject({status:204, msg:'No content'})
+    }
+    return articles.rows;
+  } else {
+    const articles = await db.query(queryString);
+    return articles.rows;
+  }
 };
