@@ -7,17 +7,6 @@ const app = require("../app.js");
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
-describe("test connection to api router", () => {
-  test("200: should respond with ok message", () => {
-    return request(app)
-      .get("/api")
-      .expect(200)
-      .then((res) => {
-        expect(res.body.msg).toBe("All OK from API Router");
-      });
-  });
-});
-
 describe("test invalid URL response", () => {
   test("404: should inform user that URL is invalid", () => {
     return request(app)
@@ -250,5 +239,116 @@ describe("GET /api/articles", () => {
     return request(app)
     .get("/api/articles?topic=paper")
     .expect(204)
+  });
+});
+
+describe('GET /api/articles/:article_id/comments', () => {
+  test('200: should respond with an array of comments for the given article', () => {
+    return request(app)
+    .get("/api/articles/1/comments")
+    .expect(200)
+    .then((res) => {
+      expect(res.body.comments).toHaveLength(13)
+      res.body.comments.forEach((comment) => {
+        expect(comment).toEqual(expect.objectContaining({
+          comment_id: expect.any(Number),
+          votes: expect.any(Number),
+          created_at: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String)
+        }))
+      })
+    })
+  })
+  test('204: should respond with no content is article_id is valid but article has no comments ', () => {
+    return request(app)
+    .get("/api/articles/2/comments")
+    .expect(204)
+  });
+  test("400: should return error if article_id is not a number", () => {
+    return request(app)
+      .get("/api/articles/notanumber/comments")
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe("Bad request - article_id must be a number");
+      });
+  });
+  test("404: should return error if path and request are valid but there is no article with that id", () => {
+    return request(app)
+      .get("/api/articles/440/comments")
+      .expect(404)
+      .then((res) => {
+        expect(res.body.msg).toBe(
+          "Not found - there is not an article with selected article_id"
+        );
+      });
+  });
+});
+
+describe('POST /api/articles/:article_id/comments', () => {
+  test('201: should respond with posted comment', () => {
+    return request(app)
+    .post('/api/articles/2/comments')
+    .send({username: 'lurker', body: 'Here is my comment'})
+    .expect(201)
+    .then((res) => {
+      expect(res.body.comment).toEqual({
+        comment_id: expect.any(Number),
+        body: 'Here is my comment',
+        votes: 0,
+        author: 'lurker',
+        article_id: 2,
+        created_at: expect.any(String)
+      })
+    })
+  });
+  test('400: should reject if article_id is not a number', () => {
+    return request(app)
+    .post('/api/articles/ten/comments')
+    .send({username: 'lurker', body: 'Here is my comment'})
+    .expect(400)
+    .then((res) => {
+      expect(res.body.msg).toBe("Bad request - article_id must be a number");
+    });
+  });
+  test('403: should reject if user does not exist', () => {
+    return request(app)
+    .post('/api/articles/2/comments')
+    .send({username: 'moonfish', body: 'Here is my comment'})
+    .expect(403)
+    .then((res) => {
+      expect(res.body.msg).toBe("User does not exist - comment has been rejected")
+    })
+  });
+  test('404: should reject if article does not exist', () => {
+    return request(app)
+    .post('/api/articles/9999/comments')
+    .send({username: 'lurker', body: 'Here is my comment'})
+    .expect(404)
+    .then((res) => {
+      expect(res.body.msg).toBe("Not found - there is not an article with selected article_id");
+    });
+  });
+  test('422: should reject if request does not contain both username and body', () => {
+    return request(app)
+    .post('/api/articles/1/comments')
+    .send({username: 'lurker', comment: 'Here is my comment'})
+    .expect(422)
+    .then((res) => {
+      expect(res.body.msg).toBe("Unprocessable entity");
+    });
+  });
+});
+
+describe("/api", () => {
+  test("200: should respond with JSON describing all the available endpoints", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then((res) => {
+        expect(typeof res.body.endpoints).toBe('string');
+        expect(typeof JSON.parse(res.body.endpoints)).toBe('object')
+      });
+
   });
 });
