@@ -1,6 +1,5 @@
 const db = require("../db/connection.js");
 const format = require("pg-format");
-const request = require("supertest");
 const { checkExists } = require("../db/utils/data-manipulation");
 const { articlesRouter } = require("../routers/articles.router.js");
 
