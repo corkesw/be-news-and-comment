@@ -1,7 +1,7 @@
 const db = require("../db/connection.js");
 const format = require("pg-format");
 const { checkExists } = require("../db/utils/data-manipulation");
-const { articlesRouter } = require("../routers/articles.router.js");
+
 
 exports.selectArticleById = async (article_id) => {
   // handle malformed article_id
