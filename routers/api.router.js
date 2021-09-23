@@ -9,7 +9,8 @@ apiRouter.get("/", (req, res, next) => {
 
   return fsPromise
     .readFile('./endpoints.json', "utf-8")
-    .then((endpoints) => {
+    .then((response) => {
+      const endpoints = JSON.parse(response)
       res.status(200).send({endpoints});
     })
     .catch(next)
