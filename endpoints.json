@@ -4,7 +4,6 @@
   },
   "GET /api/topics": {
     "description": "serves an array of all topics",
-    "queries": [],
     "exampleResponse": {
       "topics": [
         {
@@ -16,7 +15,7 @@
   },
   "GET /api/articles/:article_id": {
     "description": "returns article with the specified article_id",
-    "parameters": "article_id should be a number; will return 400 is article_id is NaN; will return 404 if article is now found",
+    "parameters": "article_id should be a number; will return 400 is article_id is NaN; will return 404 if article is not found",
     "exampleResponse": {
       "article": {
         "author": "grumpy19",
@@ -31,7 +30,7 @@
     }
   },
   "PATCH /api/articles/:article_id": {
-    "description": "allows vote field to be amended for the specified article; votes will be increased by the given value; negative value should be provided to decrease votes",
+    "description": "allows vote field to be amended for the specified article; votes will be increased by the given value; negative value should be provided to decrease votes; returns the updated article",
     "parameters": "article_id should be a number; will return 400 is article_id is NaN; will return 404 if article is now found",
     "exampleRequest1": {
       "inc_votes": 1
@@ -53,19 +52,21 @@
   },
 
   "GET /api/articles": {
-    "description": "serves an array of all topics",
+    "description": "serves an array of all articles",
     "queries": [
       {"topic": "returns all articles for given topic; will return 404 if topic does not exist"}, 
-      {"sort_by": "valid sort fields: author, title, article_id, topic, created_at, votes, comment_count; sort order defaults to descending; will return 400 if any other field is given"}, 
-      {"order": "valid arguments: asc, desc; will return 400 if any other argument is given"}],
+      {"sort_by": "valid sort fields: author, title, article_id, topic, created_at, votes, comment_count; defaults to created_at if not specified; will return 400 if any other field is given"}, 
+      {"order": "valid arguments: asc, desc; defaults to desc if not specified; will return 400 if any other argument is given"}],
     "exampleResponse": {
       "articles": [
         {
-          "title": "Seafood substitutions are increasing",
+          "author": "grumpy19",
+          "title": "The Notorious MSG’s Unlikely Formula For Success",
+          "article_id": 34,
           "topic": "cooking",
-          "author": "weegembump",
-          "body": "Text from the article..",
-          "created_at": 1527695953341
+          "created_at": "2020-11-22T11:13:00.000Z",
+          "votes": 0,
+          "comment_count": "11"
         }
       ]
     }
