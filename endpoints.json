@@ -6,12 +6,58 @@
     "description": "serves an array of all topics",
     "queries": [],
     "exampleResponse": {
-      "topics": [{ "slug": "football", "description": "Footie!" }]
+      "topics": [
+        {
+          "slug": "football",
+          "description": "Footie!"
+        }
+      ]
     }
   },
+  "GET /api/articles/:article_id": {
+    "description": "returns article with the specified article_id",
+    "parameters": "article_id should be a number; will return 400 is article_id is NaN; will return 404 if article is now found",
+    "exampleResponse": {
+      "article": {
+        "author": "grumpy19",
+        "title": "Learn HTML5, CSS3, and Responsive WebSite Design in One Go",
+        "article_id": 9,
+        "body": "Both CSS3 and HTML5 are just about fully supported in all modern browsers.....",
+        "topic": "coding",
+        "created_at": "2020-05-26T15:06:00.000Z",
+        "votes": 0,
+        "comment_count": 8
+      }
+    }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "allows vote field to be amended for the specified article; votes will be increased by the given value; negative value should be provided to decrease votes",
+    "parameters": "article_id should be a number; will return 400 is article_id is NaN; will return 404 if article is now found",
+    "exampleRequest1": {
+      "inc_votes": 1
+    },
+    "exampleRequest2": {
+      "inc_votes": -10
+    },
+    "exampleResponse": {
+      "updatedArticle": {
+        "article_id": 1,
+        "title": "Running a Node App",
+        "body": "This is part two of a series on how to get up and running with Systemd and Node.js. This part dives deeper into how to successfully run your app with systemd long-term, and how to set it up in a production environment.",
+        "votes": 100,
+        "topic": "coding",
+        "author": "jessjelly",
+        "created_at": "2020-11-07T06:03:00.000Z"
+      }
+    }
+  },
+
   "GET /api/articles": {
     "description": "serves an array of all topics",
-    "queries": ["author", "topic", "sort_by", "order"],
+    "queries": [
+      {"topic": "returns all articles for given topic; will return 404 if topic does not exist"}, 
+      {"sort_by": "valid sort fields: author, title, article_id, topic, created_at, votes, comment_count; sort order defaults to descending; will return 400 if any other field is given"}, 
+      {"order": "valid arguments: asc, desc; will return 400 if any other argument is given"}],
     "exampleResponse": {
       "articles": [
         {
@@ -22,6 +68,22 @@
           "created_at": 1527695953341
         }
       ]
+    }
+  },
+
+  "POST /api/articles/:article_id/comments": {
+    "description": "posts a new comment associated with the given article_id and returns the posted comment",
+    "parameters": "article_id should be a number; will return 400 is article_id is NaN; will return 404 if article is now found",
+    "requestExample": { "username": "grumpy19", "body": "This is my comment" },
+    "responseExample": {
+      "comment": {
+        "comment_id": 301,
+        "author": "grumpy19",
+        "article_id": 1,
+        "votes": 0,
+        "created_at": "2021-09-23T13:30:44.572Z",
+        "body": "This is my comment"
+      }
     }
   }
 }
