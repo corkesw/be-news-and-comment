@@ -1,10 +1,12 @@
 # News and Comment Server
 
-[Link to app](https://backend-pro-news.herokuapp.com/api)
+[Link to demo version](https://backend-pro-news.herokuapp.com/api)
 
-The News and Comment Server is an API which allows programmatic access of application data. The intention is to demonstrate the ability to create a real backend service.
+The News and Comment Server is an app which allows users to upload and comment on articles. It allows up and down-voting on both articles and comments. 
 
 The data is held on a PSQL database and the app utilises node-postgres to access and update data.
+
+The app was developed using node.js v16.8.0 and postgres (PostgreSQL) v13.3
 
 -----------------------------------------------------------
 
@@ -61,3 +63,11 @@ Several test suites are provided in the `__tests__` folder;
 You should avoid running all 3 suites at the same time (ie `npm t`) as this is likely to cause errors.
 
 ----------------------------------------------------------
+
+
+Write your README, including the following information:
+[ ] Link to hosted version
+[ ] Write a summary of what the project is
+[ ] Provide clear instructions of how to clone, install dependencies, seed local database, and run tests
+[ ] Include information about how to create the two .env files
+[ ] Specify minimum versions of Node.js and Postgres needed to run the project
