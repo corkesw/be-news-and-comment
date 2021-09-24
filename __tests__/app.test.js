@@ -198,7 +198,6 @@ describe("GET /api/articles", () => {
         expect(res.body.articles).toHaveLength(1);
       });
   });
-
   test("200: should work with multiple queries", () => {
     return request(app)
       .get("/api/articles?topic=mitch&sort_by=title&order=asc")
@@ -384,6 +383,22 @@ describe("DELETE /api/comments/:comment_id", () => {
     .expect(404)
     .then((res) => {
       expect(res.body.msg).toBe("Comment does not exist")
+    })
+  });
+});
+
+describe('GET /api/users', () => {
+  test('200: responds with an array of user object', () => {
+    return request(app)
+    .get("/api/users")
+    .expect(200)
+    .then((res) => {
+      expect(res.body.users.length).toBe(4)
+      res.body.users.forEach((user) => {
+        expect(user).toEqual(expect.objectContaining({
+          username: expect.any(String)
+        }))
+      })
     })
   });
 });

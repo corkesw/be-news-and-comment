@@ -3,8 +3,10 @@ const fsPromise = require("fs").promises;
 const readFile = require("../db/utils/data-manipulation");
 
 const topicsRouter = require("./topics.router");
-const { articlesRouter } = require("./articles.router");
+const articlesRouter = require("./articles.router");
 const commentsRouter = require("../routers/comments.router")
+const usersRouter = require("./users.router")
+
 
 apiRouter.get("/", (req, res, next) => {
 
@@ -21,5 +23,6 @@ apiRouter.get("/", (req, res, next) => {
 apiRouter.use("/comments", commentsRouter);
 apiRouter.use("/topics", topicsRouter);
 apiRouter.use("/articles", articlesRouter);
+apiRouter.use("/users", usersRouter)
 
 module.exports = apiRouter;

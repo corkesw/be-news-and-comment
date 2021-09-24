@@ -15,4 +15,4 @@ articlesRouter.patch("/:article_id", patchArticleById);
 
 articlesRouter.post("/:article_id/comments", postArticleComments)
 
-module.exports = { articlesRouter };
+module.exports = articlesRouter;
