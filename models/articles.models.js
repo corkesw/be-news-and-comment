@@ -4,14 +4,7 @@ const { checkExists } = require("../db/utils/data-manipulation");
 
 
 exports.selectArticleById = async (article_id) => {
-  // handle malformed article_id
-  if (isNaN(article_id)) {
-    return Promise.reject({
-      status: 400,
-      msg: "Bad request - article_id must be a number",
-    });
-  }
-
+ 
   const count = await db.query(
     `SELECT COUNT(article_id) FROM comments WHERE article_id = $1`,
     [article_id]

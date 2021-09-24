@@ -82,7 +82,7 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/notanumber")
       .expect(400)
       .then((res) => {
-        expect(res.body.msg).toBe("Bad request - article_id must be a number");
+        expect(res.body.msg).toBe("Invalid input");
       });
   });
   test("404: should return error if path and request are valid but there is no article with that id", () => {
