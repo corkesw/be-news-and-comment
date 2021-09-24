@@ -23,6 +23,20 @@
       ]
     }
   },
+
+  "GET /api/users/:username": {
+    "description": "returns specific user information",
+    "parameters": "valid username; returns 404 if user not found",
+    "exampleResponse": {
+      "user": {
+        "username": "lurker",
+        "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+        "name": "do_nothing"
+      }
+    }
+  },
+
+
   "GET /api/articles/:article_id": {
     "description": "returns article with the specified article_id",
     "parameters": "article_id should be a number; will return 400 is article_id is NaN; will return 404 if article is not found",

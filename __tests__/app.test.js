@@ -377,28 +377,55 @@ describe("DELETE /api/comments/:comment_id", () => {
         expect(res.body.msg).toBe("Bad request - comment_id must be a number");
       });
   });
-  test('404: should return error if comment_id does not exist', () => {
+  test("404: should return error if comment_id does not exist", () => {
     return request(app)
-    .delete("/api/comments/9999")
+      .delete("/api/comments/9999")
+      .expect(404)
+      .then((res) => {
+        expect(res.body.msg).toBe("Comment does not exist");
+      });
+  });
+});
+
+describe("GET /api/users", () => {
+  test("200: responds with an array of user object", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.users.length).toBe(4);
+        res.body.users.forEach((user) => {
+          expect(user).toEqual(
+            expect.objectContaining({
+              username: expect.any(String),
+            })
+          );
+        });
+      });
+  });
+});
+
+describe("GET /api/users/:username", () => {
+  test("200: should respond with users details", () => {
+    return request(app)
+      .get("/api/users/lurker")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.user).toEqual({
+          username: "lurker",
+          avatar_url:
+            "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+          name: "do_nothing",
+        });
+      });
+  });
+  test('404 should return error if user does not exist', () => {
+    return request(app)
+    .get("/api/users/bananman")
     .expect(404)
     .then((res) => {
-      expect(res.body.msg).toBe("Comment does not exist")
+      expect(res.body.msg).toBe("Not found")
     })
   });
 });
 
-describe('GET /api/users', () => {
-  test('200: responds with an array of user object', () => {
-    return request(app)
-    .get("/api/users")
-    .expect(200)
-    .then((res) => {
-      expect(res.body.users.length).toBe(4)
-      res.body.users.forEach((user) => {
-        expect(user).toEqual(expect.objectContaining({
-          username: expect.any(String)
-        }))
-      })
-    })
-  });
-});
