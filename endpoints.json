@@ -139,7 +139,7 @@
     }
   },
   "DELETE /api/comments/:comment_id": {
-    "description": "deletes a comments with the given comment_id",
+    "description": "deletes a comment with the given comment_id",
     "parameters": "comment_id should be a number; will return 400 if comment_id is not a number; will return 404 if comment does not exist"
   }
 }
