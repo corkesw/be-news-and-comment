@@ -429,3 +429,61 @@ describe("GET /api/users/:username", () => {
   });
 });
 
+describe("PATCH /api/comments/:comment_id", () => {
+  test("200: should return an updated object", () => {
+    return request(app)
+      .patch("/api/comments/10")
+      .send({ inc_votes: 100 })
+      .expect(200)
+      .then((res) => {
+        expect(res.body.updatedComment.votes).toBe(100);
+      });
+  });
+  test("400: should return error if comment_id is not a number", () => {
+    return request(app)
+      .patch("/api/comments/ten")
+      .send({ inc_votes: 100 })
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe("Invalid input");
+      });
+  });
+  test("404: should return error if path and request are valid but there is no comment with that id", () => {
+    return request(app)
+      .patch("/api/comments/440")
+      .send({ inc_votes: 100 })
+      .expect(404)
+      .then((res) => {
+        expect(res.body.msg).toBe(
+          "Not found - there is not a comment with selected comment_id"
+        );
+      });
+  });
+  test("422: should return an error if request body does not contain inc_votes", () => {
+    return request(app)
+      .patch("/api/comments/440")
+      .send({ drop_votes: 100 })
+      .expect(422)
+      .then((res) => {
+        expect(res.body.msg).toBe(
+          "Unprocessable Entity, error in request body"
+        );
+      });
+  });
+});
+
+// PATCH /api/comments/:comment_id
+// Request body accepts:
+
+// an object in the form { inc_votes: newVote }
+
+// newVote will indicate how much the votes property in the database should be updated by
+// e.g.
+
+// { inc_votes : 1 } would increment the current comment's vote property by 1
+
+// { inc_votes : -1 } would decrement the current comment's vote property by 1
+
+// Responds with:
+
+// the updated comment

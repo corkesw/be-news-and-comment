@@ -23,7 +23,6 @@
       ]
     }
   },
-
   "GET /api/users/:username": {
     "description": "returns specific user information",
     "parameters": "valid username; returns 404 if user not found",
@@ -32,45 +31,6 @@
         "username": "lurker",
         "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
         "name": "do_nothing"
-      }
-    }
-  },
-
-
-  "GET /api/articles/:article_id": {
-    "description": "returns article with the specified article_id",
-    "parameters": "article_id should be a number; will return 400 is article_id is NaN; will return 404 if article is not found",
-    "exampleResponse": {
-      "article": {
-        "author": "grumpy19",
-        "title": "Learn HTML5, CSS3, and Responsive WebSite Design in One Go",
-        "article_id": 9,
-        "body": "Both CSS3 and HTML5 are just about fully supported in all modern browsers.....",
-        "topic": "coding",
-        "created_at": "2020-05-26T15:06:00.000Z",
-        "votes": 0,
-        "comment_count": 8
-      }
-    }
-  },
-  "PATCH /api/articles/:article_id": {
-    "description": "allows vote field to be amended for the specified article; votes will be increased by the given value; negative value should be provided to decrease votes; returns the updated article",
-    "parameters": "article_id should be a number; will return 400 is article_id is NaN; will return 404 if article is now found",
-    "exampleRequest1": {
-      "inc_votes": 1
-    },
-    "exampleRequest2": {
-      "inc_votes": -10
-    },
-    "exampleResponse": {
-      "updatedArticle": {
-        "article_id": 1,
-        "title": "Running a Node App",
-        "body": "This is part two of a series on how to get up and running with Systemd and Node.js. This part dives deeper into how to successfully run your app with systemd long-term, and how to set it up in a production environment.",
-        "votes": 100,
-        "topic": "coding",
-        "author": "jessjelly",
-        "created_at": "2020-11-07T06:03:00.000Z"
       }
     }
   },
@@ -101,6 +61,65 @@
       ]
     }
   },
+  "GET /api/articles/:article_id": {
+    "description": "returns article with the specified article_id",
+    "parameters": "article_id should be a number; will return 400 is article_id is NaN; will return 404 if article is not found",
+    "exampleResponse": {
+      "article": {
+        "author": "grumpy19",
+        "title": "Learn HTML5, CSS3, and Responsive WebSite Design in One Go",
+        "article_id": 9,
+        "body": "Both CSS3 and HTML5 are just about fully supported in all modern browsers.....",
+        "topic": "coding",
+        "created_at": "2020-05-26T15:06:00.000Z",
+        "votes": 0,
+        "comment_count": 8
+      }
+    }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "allows vote field to be amended for the specified article; votes will be increased by the given value; negative value should be provided to decrease votes; returns the updated article",
+    "parameters": "article_id should be a number; will return 400 is article_id is NaN; will return 404 if article is not found",
+    "exampleRequest1": {
+      "inc_votes": 1
+    },
+    "exampleRequest2": {
+      "inc_votes": -10
+    },
+    "exampleResponse": {
+      "updatedArticle": {
+        "article_id": 1,
+        "title": "Running a Node App",
+        "body": "This is part two of a series on how to get up and running with Systemd and Node.js. This part dives deeper into how to successfully run your app with systemd long-term, and how to set it up in a production environment.",
+        "votes": 100,
+        "topic": "coding",
+        "author": "jessjelly",
+        "created_at": "2020-11-07T06:03:00.000Z"
+      }
+    }
+  },
+
+  "PATCH /api/comments/:comment_id": {
+    "description": "allows vote field to be amended for the specified comment; votes will be increased by the given value; negative value should be provided to decrease votes; returns the updated article",
+    "parameters": "comment_id should be a number; will return 400 is article_id is NaN; will return 404 if article is not found",
+    "exampleRequest1": {
+      "inc_votes": 1
+    },
+    "exampleRequest2": {
+      "inc_votes": -10
+    },
+    "exampleResponse" : {
+      "updatedComment": {
+        "comment_id": 10,
+        "author": "icellusedkars",
+        "article_id": 1,
+        "votes": 100,
+        "created_at": "2020-06-20T07:24:00.000Z",
+        "body": "git push origin master"
+      }
+    }
+  },
+
   "POST /api/articles/:article_id/comments": {
     "description": "posts a new comment associated with the given article_id and returns the posted comment",
     "parameters": "article_id should be a number; will return 400 is article_id is NaN; will return 404 if article is now found",
