@@ -13,6 +13,16 @@
       ]
     }
   },
+  "GET /api/users": {
+    "description": "serves an array of all users",
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "user27"
+        }
+      ]
+    }
+  },
   "GET /api/articles/:article_id": {
     "description": "returns article with the specified article_id",
     "parameters": "article_id should be a number; will return 400 is article_id is NaN; will return 404 if article is not found",
