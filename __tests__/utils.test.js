@@ -190,7 +190,7 @@ describe("addKeys", () => {
 
 describe('readfile', () => {
   test('should respond with a json object', async () => {
-    const path = '/Users/stephencorke/northcoders/backend/be-nc-news/endpoints.json'
+    const path = './endpoints.json'
     const actual = await readFile(path)
     expect(actual).toEqual(expect.any(Object))
   });
