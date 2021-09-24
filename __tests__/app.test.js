@@ -262,7 +262,7 @@ describe("GET /api/articles/:article_id/comments", () => {
         });
       });
   });
-  test("204: should respond with no content is article_id is valid but article has no comments ", () => {
+  test("204: should respond with no content if article_id is valid but article has no comments ", () => {
     return request(app).get("/api/articles/2/comments").expect(204);
   });
   test("400: should return error if article_id is not a number", () => {
@@ -355,5 +355,35 @@ describe("/api", () => {
           "serves up a json representation of all the available endpoints of the api"
         );
       });
+  });
+});
+
+describe("DELETE /api/comments/:comment_id", () => {
+  test("200: should delete the given comment", () => {
+    return request(app)
+      .delete("/api/comments/1")
+      .expect(204)
+      .then(async () => {
+        const checkComment = await db.query(
+          `SELECT * FROM comments WHERE comment_id = 1`
+        );
+        expect(checkComment.rows.length).toBe(0);
+      });
+  });
+  test("400: should return error if comment_id is not a number", () => {
+    return request(app)
+      .delete("/api/comments/notanumber")
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe("Bad request - comment_id must be a number");
+      });
+  });
+  test('404: should return error if comment_id does not exist', () => {
+    return request(app)
+    .delete("/api/comments/9999")
+    .expect(404)
+    .then((res) => {
+      expect(res.body.msg).toBe("Comment does not exist")
+    })
   });
 });

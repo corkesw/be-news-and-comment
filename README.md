@@ -55,7 +55,7 @@ Several test suites are provided in the `__tests__` folder;
 |  file | script  | useage  |
 |---|---|---|
 |  app.test.js |  npm t app |  tests server endpoints |
-|   dbquery.tests.js| npm t db  |  tests util function that intreact with db |
+|   dbquery.tests.js| npm t db  |  tests util functions that intreact with db |
 |  utils.test.js |  npm t utils |  tests standard util functions |
 
 You should avoid running all 3 suites at the same time (ie `npm t`) as this is likely to cause errors.
