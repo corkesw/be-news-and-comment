@@ -1,4 +1,5 @@
 const db = require("../connection");
+const fsPromise = require("fs").promises;
 
 exports.formatData = (data, keys) => {
   const formattedData = data.map((item) => {
@@ -29,3 +30,11 @@ exports.checkExists = async (table, column, item) => {
   }
 };
 
+exports.readFile = (path) => {
+  return fsPromise
+    .readFile(path, "utf-8")
+    .then((response) => {
+      console.log(response)
+      return response.split("\n");
+    })
+  }
