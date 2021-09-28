@@ -14,10 +14,6 @@ The app was developed using node.js v16.8.0 and postgres (PostgreSQL) v13.3
 
 First clone project and install dependencies
 
-`$ mkdir news_server` 
-
-`$ cd news_server`
-
 `$ git clone https://github.com/corkesw/be-nc-news.git`
 
 `$ npm install`
