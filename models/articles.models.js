@@ -205,20 +205,19 @@ exports.insertArticleComments = async (article_id, username, body) => {
   // create new comment
   const created_at = new Date();
   const postedComment = await db.query(
-    `INSERT INTO comments (body, votes, author, article_id, created_at) VALUES ($1, 0, $2, $3, $4) RETURNING *`,
-    [body, username, article_id, created_at]
+    `INSERT INTO comments (body, votes, author, article_id) VALUES ($1, 0, $2, $3) RETURNING *`,
+    [body, username, article_id]
   );
   return postedComment.rows[0];
 };
 
 exports.insertArticle = async (author, title, body, topic) => {
   const votes = 0;
-  const created_at = new Date() 
   const comment_count = 0;
   const newArticle = await db.query(`INSERT INTO articles 
-  (author, title, body, topic, votes, created_at)
-  VALUES ($1, $2, $3, $4, $5, $6) 
-  RETURNING *`, [author, title, body, topic, votes, created_at])
+  (author, title, body, topic, votes)
+  VALUES ($1, $2, $3, $4, $5) 
+  RETURNING *`, [author, title, body, topic, votes])
   newArticle.rows[0].comment_count = 0
   return newArticle.rows[0]
 }

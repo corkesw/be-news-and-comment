@@ -13,7 +13,6 @@ exports.removeCommentById = async (comment_id) => {
   // check if comment exists
   const commentExists = await checkExists("comments", "comment_id", comment_id);
   if (!commentExists) {
-    console.log("line 16");
     return Promise.reject({
       status: 404,
       msg: "Comment does not exist",
