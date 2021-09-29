@@ -27,12 +27,12 @@ const seed = (data) => {
     })
     .then(() => {
       return db.query(
-        "CREATE TABLE articles (article_id SERIAL PRIMARY KEY, title VARCHAR(255) NOT NULL, body TEXT NOT NULL, votes INT NOT NULL, topic VARCHAR NOT NULL REFERENCES topics(slug), author VARCHAR(255) NOT NULL REFERENCES users(username), created_at TIMESTAMP NOT NULL);"
+        "CREATE TABLE articles (article_id SERIAL PRIMARY KEY, title VARCHAR(255) NOT NULL, body TEXT NOT NULL, votes INT NOT NULL, topic VARCHAR NOT NULL REFERENCES topics(slug), author VARCHAR(255) NOT NULL REFERENCES users(username), created_at TIMESTAMP DEFAULT NOW() NOT NULL);"
       );
     })
     .then(() => {
       return db.query(
-        "CREATE TABLE comments (comment_id SERIAL PRIMARY KEY, author VARCHAR(255) NOT NULL REFERENCES users(username), article_id INT NOT NULL REFERENCES articles(article_id), votes INT NOT NULL, created_at TIMESTAMP NOT NULL, body TEXT NOT NULL);"
+        "CREATE TABLE comments (comment_id SERIAL PRIMARY KEY, author VARCHAR(255) NOT NULL REFERENCES users(username), article_id INT NOT NULL REFERENCES articles(article_id), votes INT NOT NULL, created_at TIMESTAMP DEFAULT NOW() NOT NULL, body TEXT NOT NULL);"
       );
     })
     .then(() => {
