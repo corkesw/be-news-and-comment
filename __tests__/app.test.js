@@ -282,6 +282,14 @@ describe("GET /api/articles", () => {
     return request(app).get("/api/articles?topic=paper").expect(204);
   });
 });
+test('200: should return total number of articles for any given query', () => {
+  return request(app)
+  .get("/api/articles")
+  .expect(200)
+  .then((res) => {
+    expect(res.body.total_count).toBe(12)
+  })
+});
 
 describe("GET /api/articles/:article_id/comments", () => {
   test("200: should respond with an array of comments for the given article", () => {

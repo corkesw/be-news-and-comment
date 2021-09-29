@@ -2,9 +2,7 @@ const db = require("../db/connection.js");
 const format = require("pg-format");
 const { checkExists } = require("../db/utils/data-manipulation");
 
-
 exports.selectArticleById = async (article_id) => {
- 
   const count = await db.query(
     `SELECT COUNT(article_id) FROM comments WHERE article_id = $1`,
     [article_id]
@@ -66,7 +64,21 @@ exports.selectArticles = async (
 ) => {
   // determine offset value from p and limit values
   const offset = (p - 1) * limit;
-  
+  let total_count = 0;
+
+  // get total number of articles for query
+  if (!topic) {
+    const countQuery = await db.query(
+      `SELECT COUNT(article_id) FROM articles;`
+    );
+    total_count = Number(countQuery.rows[0].count);
+  } else {
+    const countQuery = await db.query(
+      `SELECT COUNT(article_id) FROM articles WHERE topic = $1;`, [topic]
+    );
+    total_count = Number(countQuery.rows[0].count);
+  }
+
   // if topic query is provided, check that topic exists and reject if non-existent
   if (topic) {
     const topicQuery = await db.query(`SELECT * FROM topics WHERE slug = $1;`, [
@@ -80,7 +92,6 @@ exports.selectArticles = async (
   // reject non-number for offset and limit to prevent injection
   if (isNaN(offset) === true || isNaN(limit) === true) {
     return Promise.reject({ status: 400, msg: "Invalid query" });
-
   }
   // if sort_by query is provided, check is argument is valid and reject if column is non-existent
   const validColumns = [
@@ -119,17 +130,17 @@ exports.selectArticles = async (
     queryString += ` WHERE articles.topic = $1`;
   }
   queryString += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order} LIMIT ${limit} OFFSET ${offset};`;
-  
+
   if (topic) {
     const articles = await db.query(queryString, [topic]);
     // if topic valid but has no articles respond with 204
     if (articles.rows.length === 0) {
       return Promise.reject({ status: 204, msg: "No content" });
     }
-    return articles.rows;
+    return {articles: articles.rows, total_count};
   } else {
     const articles = await db.query(queryString);
-    return articles.rows;
+    return { articles: articles.rows, total_count };
   }
 };
 
@@ -183,8 +194,8 @@ exports.insertArticleComments = async (article_id, username, body) => {
   }
 
   // check if article exists
-  const articleExists = await checkExists("articles", "article_id", article_id)
-  if(!articleExists) {
+  const articleExists = await checkExists("articles", "article_id", article_id);
+  if (!articleExists) {
     return Promise.reject({
       status: 404,
       msg: "Not found - there is not an article with selected article_id",
