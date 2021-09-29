@@ -24,6 +24,7 @@ describe("GET /api/topics", () => {
       .get("/api/topics")
       .expect(200)
       .then((res) => {
+        expect(res.body.topics).not.toHaveLength(0);
         res.body.topics.forEach((topic) => {
           expect(topic).toEqual(
             expect.objectContaining({
@@ -244,6 +245,14 @@ describe("GET /api/articles", () => {
         expect(res.body.total_count).toBe(12);
       });
   });
+  test("200: should respond with empty array if topic has no related articles ", () => {
+    return request(app)
+    .get("/api/articles?topic=paper")
+    .expect(200)
+    .then((res) => {
+      expect(res.body.articles).toHaveLength(0);
+    });
+  });
   test("400: should respond with an error if sort_by is not a valid column", () => {
     return request(app)
       .get("/api/articles?sort_by=banana")
@@ -286,9 +295,6 @@ describe("GET /api/articles", () => {
         expect(res.body.msg).toBe("Not found");
       });
   });
-  test("204: should respond with no content if topic has no related articles ", () => {
-    return request(app).get("/api/articles?topic=paper").expect(204);
-  });
 });
 
 describe("GET /api/articles/:article_id/comments", () => {
@@ -311,8 +317,13 @@ describe("GET /api/articles/:article_id/comments", () => {
         });
       });
   });
-  test("204: should respond with no content if article_id is valid but article has no comments ", () => {
-    return request(app).get("/api/articles/2/comments").expect(204);
+  test("200: should respond with empty array if article_id is valid but article has no comments ", () => {
+    return request(app)
+    .get("/api/articles/2/comments")
+    .expect(200)
+    .then((res) => {
+      expect(res.body.comments).toHaveLength(0)
+    });
   });
   test("400: should return error if article_id is not a number", () => {
     return request(app)
@@ -498,6 +509,17 @@ describe("PATCH /api/comments/:comment_id", () => {
         expect(res.body.msg).toBe("Invalid input");
       });
   });
+  test("400: should return an error if request body does not contain inc_votes", () => {
+    return request(app)
+      .patch("/api/comments/440")
+      .send({ drop_votes: 100 })
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe(
+          "Invalid input"
+        );
+      });
+  });
   test("404: should return error if path and request are valid but there is no comment with that id", () => {
     return request(app)
       .patch("/api/comments/440")
@@ -506,17 +528,6 @@ describe("PATCH /api/comments/:comment_id", () => {
       .then((res) => {
         expect(res.body.msg).toBe(
           "Not found - there is not a comment with selected comment_id"
-        );
-      });
-  });
-  test("422: should return an error if request body does not contain inc_votes", () => {
-    return request(app)
-      .patch("/api/comments/440")
-      .send({ drop_votes: 100 })
-      .expect(422)
-      .then((res) => {
-        expect(res.body.msg).toBe(
-          "Unprocessable Entity, error in request body"
         );
       });
   });
@@ -587,7 +598,7 @@ describe("POST /api/articles", () => {
         expect(res.body.msg).toBe("Invalid input");
       });
   });
-  test('404: returns 404 if user does not exist ', () => {
+  test("404: returns 404 if user does not exist ", () => {
     return request(app)
       .post("/api/articles")
       .send({
@@ -598,10 +609,10 @@ describe("POST /api/articles", () => {
       })
       .expect(404)
       .then((res) => {
-        expect(res.body.msg).toBe('Not found')
-      })
+        expect(res.body.msg).toBe("Not found");
+      });
   });
-  test('404: returns 404 if topic does not exist ', () => {
+  test("404: returns 404 if topic does not exist ", () => {
     return request(app)
       .post("/api/articles")
       .send({
@@ -612,7 +623,7 @@ describe("POST /api/articles", () => {
       })
       .expect(404)
       .then((res) => {
-        expect(res.body.msg).toBe('Not found')
-      })
+        expect(res.body.msg).toBe("Not found");
+      });
   });
 });

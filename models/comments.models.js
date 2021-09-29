@@ -30,8 +30,8 @@ exports.updateCommentById = async (comment_id, inc_votes) => {
   // handle missing parameters in request body
   if (!inc_votes) {
     return Promise.reject({
-      status: 422,
-      msg: "Unprocessable Entity, error in request body",
+      status: 400,
+      msg: "Invalid input",
     });
   }
 

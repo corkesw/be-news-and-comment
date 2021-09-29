@@ -133,10 +133,6 @@ exports.selectArticles = async (
 
   if (topic) {
     const articles = await db.query(queryString, [topic]);
-    // if topic valid but has no articles respond with 204
-    if (articles.rows.length === 0) {
-      return Promise.reject({ status: 204, msg: "No content" });
-    }
     return {articles: articles.rows, total_count};
   } else {
     const articles = await db.query(queryString);
@@ -167,11 +163,6 @@ exports.selectArticleComments = async (article_id) => {
     `SELECT comment_id, votes, created_at, author, body FROM comments WHERE article_id = $1`,
     [article_id]
   );
-  // handle article with no comments
-  if (comments.rows.length === 0) {
-    return Promise.reject({ status: 204, msg: "No content" });
-  }
-
   return comments.rows;
 };
 
