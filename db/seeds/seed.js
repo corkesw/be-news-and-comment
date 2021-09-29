@@ -32,7 +32,7 @@ const seed = (data) => {
     })
     .then(() => {
       return db.query(
-        "CREATE TABLE comments (comment_id SERIAL PRIMARY KEY, author VARCHAR(255) NOT NULL REFERENCES users(username), article_id INT NOT NULL REFERENCES articles(article_id), votes INT NOT NULL, created_at TIMESTAMP DEFAULT NOW() NOT NULL, body TEXT NOT NULL);"
+        "CREATE TABLE comments (comment_id SERIAL PRIMARY KEY, author VARCHAR(255) NOT NULL REFERENCES users(username), article_id INT NOT NULL REFERENCES articles(article_id) ON DELETE CASCADE, votes INT NOT NULL, created_at TIMESTAMP DEFAULT NOW() NOT NULL, body TEXT NOT NULL);"
       );
     })
     .then(() => {
