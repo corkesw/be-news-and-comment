@@ -45,6 +45,12 @@
       },
       {
         "order": "valid arguments: asc, desc; defaults to desc if not specified; will return 400 if any other argument is given"
+      },
+      {
+        "limit": "number of responses per page, defaults to 10"
+      },
+      {
+        "p": "page to return based on limit, defaults to 1"
       }
     ],
     "exampleResponse": {
