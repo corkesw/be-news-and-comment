@@ -35,7 +35,7 @@
     }
   },
   "GET /api/articles": {
-    "description": "serves an array of all articles",
+    "description": "serves an array of all articles and a total_count of articles meeting search criteria",
     "queries": [
       {
         "topic": "returns all articles for given topic; will return 404 if topic does not exist"
@@ -64,7 +64,8 @@
           "votes": 0,
           "comment_count": "11"
         }
-      ]
+      ],
+      "total_count": "1"
     }
   },
   "GET /api/articles/:article_id": {
