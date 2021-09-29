@@ -12,13 +12,6 @@ exports.formatData = (data, keys) => {
   return formattedData;
 };
 
-exports.addKeys = (objArr, key, keyValues) => {
-  for (let i = 0; i < objArr.length; i++) {
-    objArr[i][key] = keyValues[i][key] - 1;
-  }
-  return objArr;
-};
-
 exports.checkExists = async (table, column, item) => {
   const query = await db.query(
     `SELECT * FROM ${table} WHERE ${column} = '${item}'`
