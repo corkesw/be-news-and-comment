@@ -627,3 +627,30 @@ describe("POST /api/articles", () => {
       });
   });
 });
+
+describe('DELETE /api/articles/:article_id', () => {
+  test('204: responds with 204 when article deleted', () => {
+    return request(app)
+    .delete("/api/articles/1")
+    .expect(204)
+    .then((res) => {
+      expect(res.body).toEqual({})
+    })
+  });
+  test('400: returns error if article_id is not a number', () => {
+    return request(app)
+    .delete("/api/articles/notanumber")
+    .expect(400)
+    .then((res) => {
+      expect(res.body.msg).toBe('Invalid input')
+    })
+  })
+  test('404: returns error if article_id not found', () => {
+    return request(app)
+    .delete("/api/articles/999")
+    .expect(404)
+    .then((res) => {
+      expect(res.body.msg).toBe('Article does not exist')
+    })
+  });
+});

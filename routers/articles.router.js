@@ -5,16 +5,27 @@ const {
   getArticles,
   getArticleComments,
   postArticleComments,
-  postArticle
+  postArticle,
+  deleteArticleById
 } = require("../controllers/articles.controllers");
 
-articlesRouter.get("/:article_id", getArticleById);
-articlesRouter.get("/:article_id/comments", getArticleComments)
-articlesRouter.get("/", getArticles);
 
-articlesRouter.patch("/:article_id", patchArticleById);
+articlesRouter
+  .route("/")
+  .get(getArticles)
+  .post(postArticle)
+  
+articlesRouter
+  .route("/:article_id")
+  .get(getArticleById)
+  .patch(patchArticleById)
+  .delete(deleteArticleById)
 
-articlesRouter.post("/:article_id/comments", postArticleComments)
-articlesRouter.post("/", postArticle)
+articlesRouter
+  .route("/:article_id/comments")
+  .get(getArticleComments)
+  .post(postArticleComments)
+
+
 
 module.exports = articlesRouter;

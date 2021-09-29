@@ -212,3 +212,19 @@ exports.insertArticle = async (author, title, body, topic) => {
   newArticle.rows[0].comment_count = 0
   return newArticle.rows[0]
 }
+
+exports.removeArticleById = async (article_id) => {
+  // check if article exists
+  const commentExists = await checkExists("articles", "article_id", article_id);
+  if (!commentExists) {
+    return Promise.reject({
+      status: 404,
+      msg: "Article does not exist",
+    });
+  }
+
+  const deletedArticle = await db.query(
+    `DELETE FROM articles WHERE article_id = $1 RETURNING *;`,[article_id]
+    )
+  return deletedArticle.rows[0]
+}

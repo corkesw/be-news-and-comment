@@ -2,38 +2,7 @@
   "GET /api": {
     "description": "serves up a json representation of all the available endpoints of the api"
   },
-  "GET /api/topics": {
-    "description": "serves an array of all topics",
-    "exampleResponse": {
-      "topics": [
-        {
-          "slug": "football",
-          "description": "Footie!"
-        }
-      ]
-    }
-  },
-  "GET /api/users": {
-    "description": "serves an array of all users",
-    "exampleResponse": {
-      "users": [
-        {
-          "username": "user27"
-        }
-      ]
-    }
-  },
-  "GET /api/users/:username": {
-    "description": "returns specific user information",
-    "parameters": "valid username; returns 404 if user not found",
-    "exampleResponse": {
-      "user": {
-        "username": "lurker",
-        "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
-        "name": "do_nothing"
-      }
-    }
-  },
+
   "GET /api/articles": {
     "description": "serves an array of all articles and a total_count of articles meeting search criteria",
     "queries": [
@@ -68,6 +37,28 @@
       "total_count": "1"
     }
   },
+
+  "POST /api/articles" : {
+    "description": "allows a new article to be posted",
+    "parameters": "author, title, body, topic; will return 400 if any fields are missing; will return 404 if user or topic does not exist",
+    "requestExample" : {
+      "author": "grumpy19",
+      "title": "Running a Node App",
+      "body": "This is my article",
+      "topic": "coding" 
+    },
+    "responseExample": {
+      "author": "grumpy19",
+      "title": "Running a Node App",
+      "body": "This is my article",
+      "topic": "coding",
+      "article_id": 34,
+      "votes": 0,
+      "created_at": "2020-05-26T15:06:00.000Z",
+      "comment_count": 0 
+    }
+  },
+
   "GET /api/articles/:article_id": {
     "description": "returns article with the specified article_id",
     "parameters": "article_id should be a number; will return 400 is article_id is NaN; will return 404 if article is not found",
@@ -106,24 +97,24 @@
     }
   },
 
-  "PATCH /api/comments/:comment_id": {
-    "description": "allows vote field to be amended for the specified comment; votes will be increased by the given value; negative value should be provided to decrease votes; returns the updated article",
-    "parameters": "comment_id should be a number; will return 400 is article_id is NaN; will return 404 if article is not found",
-    "exampleRequest1": {
-      "inc_votes": 1
-    },
-    "exampleRequest2": {
-      "inc_votes": -10
-    },
-    "exampleResponse" : {
-      "updatedComment": {
-        "comment_id": 10,
-        "author": "icellusedkars",
-        "article_id": 1,
-        "votes": 100,
-        "created_at": "2020-06-20T07:24:00.000Z",
-        "body": "git push origin master"
-      }
+  "DELETE /api/articles/:article_id": {
+    "description": "allows deletion of article"
+  },
+
+
+  "GET /api/articles/:article_id/comments": {
+    "description": "returns comments for selected article",
+    "parameters": "article_id should be a number; will return 400 is article_id is NaN; will return 404 if article is not found",
+    "resposeExample": {
+      "comments": [
+        {
+          "comment_id": 31,
+          "votes": 11,
+          "created_at": "2020-09-26T17:16:00.000Z",
+          "author": "weegembump",
+          "body": "Sit sequi odio suscipit. Iure quisquam qui alias distinctio eos officia enim aut sit. Corrupti ut praesentium ut iste earum itaque qui. Dolores in ab rerum consequuntur. Id ab aliquid autem dolore."
+        }
+      ]
     }
   },
 
@@ -146,29 +137,79 @@
     }
   },
 
-  "POST /api/articles" : {
-    "description": "allows a new article to be posted",
-    "parameters": "author, title, body, topic; will return 400 if any fields are missing; will return 404 if user or topic does not exist",
-    "requestExample" : {
-      "author": "grumpy19",
-      "title": "Running a Node App",
-      "body": "This is my article",
-      "topic": "coding" 
-    },
-    "responseExample": {
-      "author": "grumpy19",
-      "title": "Running a Node App",
-      "body": "This is my article",
-      "topic": "coding",
-      "article_id": 34,
-      "votes": 0,
-      "created_at": "2020-05-26T15:06:00.000Z",
-      "comment_count": 0 
+
+
+
+
+
+
+
+
+  "GET /api/topics": {
+    "description": "serves an array of all topics",
+    "exampleResponse": {
+      "topics": [
+        {
+          "slug": "football",
+          "description": "Footie!"
+        }
+      ]
     }
   },
+
+  
+
+  "GET /api/users": {
+    "description": "serves an array of all users",
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "user27"
+        }
+      ]
+    }
+  },
+  
+  
+  
+
+  "PATCH /api/comments/:comment_id": {
+    "description": "allows vote field to be amended for the specified comment; votes will be increased by the given value; negative value should be provided to decrease votes; returns the updated article",
+    "parameters": "comment_id should be a number; will return 400 is article_id is NaN; will return 404 if article is not found",
+    "exampleRequest1": {
+      "inc_votes": 1
+    },
+    "exampleRequest2": {
+      "inc_votes": -10
+    },
+    "exampleResponse" : {
+      "updatedComment": {
+        "comment_id": 10,
+        "author": "icellusedkars",
+        "article_id": 1,
+        "votes": 100,
+        "created_at": "2020-06-20T07:24:00.000Z",
+        "body": "git push origin master"
+      }
+    }
+  },
+
+  
 
   "DELETE /api/comments/:comment_id": {
     "description": "deletes a comment with the given comment_id",
     "parameters": "comment_id should be a number; will return 400 if comment_id is not a number; will return 404 if comment does not exist"
+  },
+
+  "GET /api/users/:username": {
+    "description": "returns specific user information",
+    "parameters": "valid username; returns 404 if user not found",
+    "exampleResponse": {
+      "user": {
+        "username": "lurker",
+        "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+        "name": "do_nothing"
+      }
+    }
   }
 }
