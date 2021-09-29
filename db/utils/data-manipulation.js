@@ -27,7 +27,6 @@ exports.readFile = (path) => {
   return fsPromise
     .readFile(path, "utf-8")
     .then((response) => {
-      console.log(response)
       return response.split("\n");
     })
   }
