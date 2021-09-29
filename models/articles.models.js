@@ -60,8 +60,13 @@ exports.updateArticleById = async (article_id, inc_votes) => {
 exports.selectArticles = async (
   sort_by = "created_at",
   order = "desc",
-  topic
+  topic,
+  limit = 10,
+  p = 1
 ) => {
+  // determine offset value from p and limit values
+  const offset = (p - 1) * limit;
+  
   // if topic query is provided, check that topic exists and reject if non-existent
   if (topic) {
     const topicQuery = await db.query(`SELECT * FROM topics WHERE slug = $1;`, [
@@ -72,6 +77,11 @@ exports.selectArticles = async (
     }
   }
 
+  // reject non-number for offset and limit to prevent injection
+  if (isNaN(offset) === true || isNaN(limit) === true) {
+    return Promise.reject({ status: 400, msg: "Invalid query" });
+
+  }
   // if sort_by query is provided, check is argument is valid and reject if column is non-existent
   const validColumns = [
     "author",
@@ -108,8 +118,8 @@ exports.selectArticles = async (
   if (topic) {
     queryString += ` WHERE articles.topic = $1`;
   }
-  queryString += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order};`;
-
+  queryString += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order} LIMIT ${limit} OFFSET ${offset};`;
+  
   if (topic) {
     const articles = await db.query(queryString, [topic]);
     // if topic valid but has no articles respond with 204

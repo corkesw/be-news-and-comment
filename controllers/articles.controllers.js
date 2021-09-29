@@ -3,12 +3,12 @@ const {
   updateArticleById,
   selectArticles,
   selectArticleComments,
-  insertArticleComments
+  insertArticleComments,
 } = require("../models/articles.models");
 
 exports.getArticleById = (req, res, next) => {
   const { article_id } = req.params;
-  selectArticleById((article_id))
+  selectArticleById(article_id)
     .then((article) => {
       res.status(200).send({ article });
     })
@@ -26,29 +26,29 @@ exports.patchArticleById = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-    const {sort_by, order, topic} = req.query
-    selectArticles(sort_by, order, topic)
-    .then((articles)=> {
-        res.status(200).send({articles})
+  const { sort_by, order, topic, limit, p } = req.query;
+  selectArticles(sort_by, order, topic, limit, p)
+    .then((articles) => {
+      res.status(200).send({ articles });
     })
-    .catch(next)
+    .catch(next);
 };
 
 exports.getArticleComments = (req, res, next) => {
-    const {article_id} = req.params
-    selectArticleComments(article_id)
+  const { article_id } = req.params;
+  selectArticleComments(article_id)
     .then((comments) => {
-      res.status(200).send({comments})
+      res.status(200).send({ comments });
     })
-    .catch(next)
-}
+    .catch(next);
+};
 
 exports.postArticleComments = (req, res, next) => {
-  const {article_id} = req.params;
-  const {username, body} = req.body;
+  const { article_id } = req.params;
+  const { username, body } = req.body;
   insertArticleComments(article_id, username, body)
-  .then((comment) => {
-    res.status(201).send({comment})
-  })
-  .catch(next)
-}
+    .then((comment) => {
+      res.status(201).send({ comment });
+    })
+    .catch(next);
+};

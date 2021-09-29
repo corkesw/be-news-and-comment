@@ -141,7 +141,7 @@ describe("PATCH /api/articles/:article_id", () => {
 });
 
 describe("GET /api/articles", () => {
-  test("200: should return all articles", () => {
+  test("200: should return first ten articles", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
@@ -159,7 +159,7 @@ describe("GET /api/articles", () => {
             })
           );
         });
-        expect(res.body.articles).toHaveLength(12);
+        expect(res.body.articles).toHaveLength(10);
       });
   });
   test("200: should be sortable by column", () => {
@@ -203,12 +203,38 @@ describe("GET /api/articles", () => {
       .get("/api/articles?topic=mitch&sort_by=title&order=asc")
       .expect(200)
       .then((res) => {
-        expect(res.body.articles).toHaveLength(11);
+        expect(res.body.articles).toHaveLength(10);
         expect(res.body.articles[0].title).toBe("A");
         res.body.articles.forEach((article) => {
           expect(article.topic).toBe("mitch");
         });
       });
+  });
+  test('200: should be return correct number of queries when limit query is provided', () => {
+    return request(app)
+    .get("/api/articles?limit=5")
+    .expect(200)
+    .then((res) => {
+      expect(res.body.articles).toHaveLength(5)
+    })
+  });
+  test('200: should return the correct page when passed a p query', () => {
+    return request(app)
+    .get("/api/articles?limit=5&p=2")
+    .expect(200)
+    .then((res) => {
+      expect(res.body.articles[0]).toEqual(
+        expect.objectContaining({
+          author: 'butter_bridge',
+              title: 'Living in the shadow of a great man',
+              article_id: expect.any(Number),
+              topic: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              comment_count: expect.any(String),
+        })
+      )
+    })
   });
   test("400: should respond with an error if sort_by is not a valid column", () => {
     return request(app)
@@ -227,6 +253,22 @@ describe("GET /api/articles", () => {
       .then((res) => {
         expect(res.body.msg).toBe("Bad request - order should be asc or desc");
       });
+  });
+  test('400: should reject any non-number inputs for p', () => {
+    return request(app)
+    .get("/api/articles?p=SQLINJECT")
+    .expect(400)
+    .then((res) => {
+      expect(res.body.msg).toBe('Invalid query')
+    })
+  });
+  test('400: should reject any non-number inputs for limit', () => {
+    return request(app)
+    .get("/api/articles?limit=SQLINJECT")
+    .expect(400)
+    .then((res) => {
+      expect(res.body.msg).toBe('Invalid query')
+    })
   });
   test("404: should respond with error if topic is not in the database", () => {
     return request(app)
@@ -472,18 +514,3 @@ describe("PATCH /api/comments/:comment_id", () => {
   });
 });
 
-// PATCH /api/comments/:comment_id
-// Request body accepts:
-
-// an object in the form { inc_votes: newVote }
-
-// newVote will indicate how much the votes property in the database should be updated by
-// e.g.
-
-// { inc_votes : 1 } would increment the current comment's vote property by 1
-
-// { inc_votes : -1 } would decrement the current comment's vote property by 1
-
-// Responds with:
-
-// the updated comment
