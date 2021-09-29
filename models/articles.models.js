@@ -210,3 +210,15 @@ exports.insertArticleComments = async (article_id, username, body) => {
   );
   return postedComment.rows[0];
 };
+
+exports.insertArticle = async (author, title, body, topic) => {
+  const votes = 0;
+  const created_at = new Date() 
+  const comment_count = 0;
+  const newArticle = await db.query(`INSERT INTO articles 
+  (author, title, body, topic, votes, created_at)
+  VALUES ($1, $2, $3, $4, $5, $6) 
+  RETURNING *`, [author, title, body, topic, votes, created_at])
+  newArticle.rows[0].comment_count = 0
+  return newArticle.rows[0]
+}

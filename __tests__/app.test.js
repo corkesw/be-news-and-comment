@@ -210,31 +210,39 @@ describe("GET /api/articles", () => {
         });
       });
   });
-  test('200: should be return correct number of queries when limit query is provided', () => {
+  test("200: should be return correct number of queries when limit query is provided", () => {
     return request(app)
-    .get("/api/articles?limit=5")
-    .expect(200)
-    .then((res) => {
-      expect(res.body.articles).toHaveLength(5)
-    })
+      .get("/api/articles?limit=5")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.articles).toHaveLength(5);
+      });
   });
-  test('200: should return the correct page when passed a p query', () => {
+  test("200: should return the correct page when passed a p query", () => {
     return request(app)
-    .get("/api/articles?limit=5&p=2")
-    .expect(200)
-    .then((res) => {
-      expect(res.body.articles[0]).toEqual(
-        expect.objectContaining({
-          author: 'butter_bridge',
-              title: 'Living in the shadow of a great man',
-              article_id: expect.any(Number),
-              topic: expect.any(String),
-              created_at: expect.any(String),
-              votes: expect.any(Number),
-              comment_count: expect.any(String),
-        })
-      )
-    })
+      .get("/api/articles?limit=5&p=2")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.articles[0]).toEqual(
+          expect.objectContaining({
+            author: "butter_bridge",
+            title: "Living in the shadow of a great man",
+            article_id: expect.any(Number),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            comment_count: expect.any(String),
+          })
+        );
+      });
+  });
+  test("200: should return total number of articles for any given query", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.total_count).toBe(12);
+      });
   });
   test("400: should respond with an error if sort_by is not a valid column", () => {
     return request(app)
@@ -254,21 +262,21 @@ describe("GET /api/articles", () => {
         expect(res.body.msg).toBe("Bad request - order should be asc or desc");
       });
   });
-  test('400: should reject any non-number inputs for p', () => {
+  test("400: should reject any non-number inputs for p", () => {
     return request(app)
-    .get("/api/articles?p=SQLINJECT")
-    .expect(400)
-    .then((res) => {
-      expect(res.body.msg).toBe('Invalid query')
-    })
+      .get("/api/articles?p=SQLINJECT")
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe("Invalid query");
+      });
   });
-  test('400: should reject any non-number inputs for limit', () => {
+  test("400: should reject any non-number inputs for limit", () => {
     return request(app)
-    .get("/api/articles?limit=SQLINJECT")
-    .expect(400)
-    .then((res) => {
-      expect(res.body.msg).toBe('Invalid query')
-    })
+      .get("/api/articles?limit=SQLINJECT")
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe("Invalid query");
+      });
   });
   test("404: should respond with error if topic is not in the database", () => {
     return request(app)
@@ -281,14 +289,6 @@ describe("GET /api/articles", () => {
   test("204: should respond with no content if topic has no related articles ", () => {
     return request(app).get("/api/articles?topic=paper").expect(204);
   });
-});
-test('200: should return total number of articles for any given query', () => {
-  return request(app)
-  .get("/api/articles")
-  .expect(200)
-  .then((res) => {
-    expect(res.body.total_count).toBe(12)
-  })
 });
 
 describe("GET /api/articles/:article_id/comments", () => {
@@ -360,6 +360,15 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(res.body.msg).toBe("Bad request - article_id must be a number");
       });
   });
+  test("400: should reject if request does not contain both username and body", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({ username: "lurker", comment: "Here is my comment" })
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe("Invalid input");
+      });
+  });
   test("403: should reject if user does not exist", () => {
     return request(app)
       .post("/api/articles/2/comments")
@@ -380,15 +389,6 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(res.body.msg).toBe(
           "Not found - there is not an article with selected article_id"
         );
-      });
-  });
-  test("422: should reject if request does not contain both username and body", () => {
-    return request(app)
-      .post("/api/articles/1/comments")
-      .send({ username: "lurker", comment: "Here is my comment" })
-      .expect(422)
-      .then((res) => {
-        expect(res.body.msg).toBe("Unprocessable entity");
       });
   });
 });
@@ -469,13 +469,13 @@ describe("GET /api/users/:username", () => {
         });
       });
   });
-  test('404 should return error if user does not exist', () => {
+  test("404 should return error if user does not exist", () => {
     return request(app)
-    .get("/api/users/bananman")
-    .expect(404)
-    .then((res) => {
-      expect(res.body.msg).toBe("Not found")
-    })
+      .get("/api/users/bananman")
+      .expect(404)
+      .then((res) => {
+        expect(res.body.msg).toBe("Not found");
+      });
   });
 });
 
@@ -522,3 +522,97 @@ describe("PATCH /api/comments/:comment_id", () => {
   });
 });
 
+describe("POST /api/articles", () => {
+  test("201: should return a newly added article", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        author: "butter_bridge",
+        title: "fur balls",
+        body: "Cats make fur balls which is why dogs are better",
+        topic: "cats",
+      })
+      .expect(201)
+      .then((res) => {
+        expect(res.body.article).toEqual(
+          expect.objectContaining({
+            author: "butter_bridge",
+            title: "fur balls",
+            body: expect.any(String),
+            topic: "cats",
+            article_id: expect.any(Number),
+            votes: 0,
+            created_at: expect.any(String),
+            comment_count: 0,
+          })
+        );
+      });
+  });
+  test("201: should return a newly added article ignoring extra properties in request", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        votes: 27,
+        author: "butter_bridge",
+        title: "fur balls",
+        body: "Cats make fur balls which is why dogs are better",
+        topic: "cats",
+      })
+      .expect(201)
+      .then((res) => {
+        expect(res.body.article).toEqual(
+          expect.objectContaining({
+            author: "butter_bridge",
+            title: "fur balls",
+            body: expect.any(String),
+            topic: "cats",
+            article_id: expect.any(Number),
+            votes: 0,
+            created_at: expect.any(String),
+            comment_count: 0,
+          })
+        );
+      });
+  });
+  test("400: returns bad request if request body does not contain the required fields", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        title: "fur balls",
+        body: "Cats make fur balls which is why dogs are better",
+        topic: "cats",
+      })
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe("Invalid input");
+      });
+  });
+  test('404: returns 404 if user does not exist ', () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        author: "bilbo",
+        title: "fur balls",
+        body: "Cats make fur balls which is why dogs are better",
+        topic: "cats",
+      })
+      .expect(404)
+      .then((res) => {
+        expect(res.body.msg).toBe('Not found')
+      })
+  });
+  test('404: returns 404 if topic does not exist ', () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        author: "butter_bridge",
+        title: "fur balls",
+        body: "Cats make fur balls which is why dogs are better",
+        topic: "bananas",
+      })
+      .expect(404)
+      .then((res) => {
+        expect(res.body.msg).toBe('Not found')
+      })
+  });
+});
