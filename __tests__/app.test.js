@@ -52,10 +52,10 @@ describe("GET /api/articles/:article_id", () => {
             topic: expect.any(String),
             created_at: expect.any(String),
             votes: expect.any(Number),
-            comment_count: expect.any(Number),
+            comment_count: expect.any(String),
           })
         );
-        expect(res.body.article.comment_count).toBe(13);
+        expect(res.body.article.comment_count).toBe("13");
       });
   });
   test("200: should work for article with zero comments", () => {
@@ -72,10 +72,10 @@ describe("GET /api/articles/:article_id", () => {
             topic: expect.any(String),
             created_at: expect.any(String),
             votes: expect.any(Number),
-            comment_count: expect.any(Number),
+            comment_count: expect.any(String),
           })
         );
-        expect(res.body.article.comment_count).toBe(0);
+        expect(res.body.article.comment_count).toBe("0");
       });
   });
   test("400: should return error if article_id is not a number", () => {
@@ -247,11 +247,11 @@ describe("GET /api/articles", () => {
   });
   test("200: should respond with empty array if topic has no related articles ", () => {
     return request(app)
-    .get("/api/articles?topic=paper")
-    .expect(200)
-    .then((res) => {
-      expect(res.body.articles).toHaveLength(0);
-    });
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.articles).toHaveLength(0);
+      });
   });
   test("400: should respond with an error if sort_by is not a valid column", () => {
     return request(app)
@@ -319,11 +319,11 @@ describe("GET /api/articles/:article_id/comments", () => {
   });
   test("200: should respond with empty array if article_id is valid but article has no comments ", () => {
     return request(app)
-    .get("/api/articles/2/comments")
-    .expect(200)
-    .then((res) => {
-      expect(res.body.comments).toHaveLength(0)
-    });
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.comments).toHaveLength(0);
+      });
   });
   test("400: should return error if article_id is not a number", () => {
     return request(app)
@@ -362,21 +362,21 @@ describe("POST /api/articles/:article_id/comments", () => {
         });
       });
   });
-  test('201: should ignore additional fields in request', () => {
+  test("201: should ignore additional fields in request", () => {
     return request(app)
-    .post("/api/articles/2/comments")
-    .send({ username: "lurker", body: "Here is my comment", votes: 21})
-    .expect(201)
-    .then((res) => {
-      expect(res.body.comment).toEqual({
-        comment_id: expect.any(Number),
-        body: "Here is my comment",
-        votes: 0,
-        author: "lurker",
-        article_id: 2,
-        created_at: expect.any(String),
+      .post("/api/articles/2/comments")
+      .send({ username: "lurker", body: "Here is my comment", votes: 21 })
+      .expect(201)
+      .then((res) => {
+        expect(res.body.comment).toEqual({
+          comment_id: expect.any(Number),
+          body: "Here is my comment",
+          votes: 0,
+          author: "lurker",
+          article_id: 2,
+          created_at: expect.any(String),
+        });
       });
-    });
   });
   test("400: should reject if article_id is not a number", () => {
     return request(app)
@@ -402,9 +402,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send({ username: "moonfish", body: "Here is my comment" })
       .expect(404)
       .then((res) => {
-        expect(res.body.msg).toBe(
-          "User not found"
-        );
+        expect(res.body.msg).toBe("User not found");
       });
   });
   test("404: should reject if article does not exist", () => {
@@ -531,9 +529,7 @@ describe("PATCH /api/comments/:comment_id", () => {
       .send({ drop_votes: 100 })
       .expect(400)
       .then((res) => {
-        expect(res.body.msg).toBe(
-          "Invalid input"
-        );
+        expect(res.body.msg).toBe("Invalid input");
       });
   });
   test("404: should return error if path and request are valid but there is no comment with that id", () => {
@@ -644,29 +640,29 @@ describe("POST /api/articles", () => {
   });
 });
 
-describe('DELETE /api/articles/:article_id', () => {
-  test('204: responds with 204 when article deleted', () => {
+describe("DELETE /api/articles/:article_id", () => {
+  test("204: responds with 204 when article deleted", () => {
     return request(app)
-    .delete("/api/articles/1")
-    .expect(204)
-    .then((res) => {
-      expect(res.body).toEqual({})
-    })
+      .delete("/api/articles/1")
+      .expect(204)
+      .then((res) => {
+        expect(res.body).toEqual({});
+      });
   });
-  test('400: returns error if article_id is not a number', () => {
+  test("400: returns error if article_id is not a number", () => {
     return request(app)
-    .delete("/api/articles/notanumber")
-    .expect(400)
-    .then((res) => {
-      expect(res.body.msg).toBe('Invalid input')
-    })
-  })
-  test('404: returns error if article_id not found', () => {
+      .delete("/api/articles/notanumber")
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe("Invalid input");
+      });
+  });
+  test("404: returns error if article_id not found", () => {
     return request(app)
-    .delete("/api/articles/999")
-    .expect(404)
-    .then((res) => {
-      expect(res.body.msg).toBe('Article does not exist')
-    })
+      .delete("/api/articles/999")
+      .expect(404)
+      .then((res) => {
+        expect(res.body.msg).toBe("Article does not exist");
+      });
   });
 });

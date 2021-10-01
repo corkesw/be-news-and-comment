@@ -3,12 +3,12 @@ const format = require("pg-format");
 const { checkExists } = require("../db/utils/data-manipulation");
 
 exports.selectArticleById = async (article_id) => {
-  const count = await db.query(
-    `SELECT COUNT(article_id) FROM comments WHERE article_id = $1`,
-    [article_id]
-  );
   const results = await db.query(
-    `SELECT author, title, article_id, body, topic, created_at, votes FROM articles WHERE article_id = $1`,
+    `SELECT COUNT (comments.comment_id) AS comment_count, title, articles.article_id, articles.author, articles.body, topic, articles.created_at, articles.votes FROM articles 
+    LEFT JOIN comments
+    ON articles.article_id = comments.article_id
+    WHERE articles.article_id = $1
+    GROUP BY articles.article_id`,
     [article_id]
   );
 
@@ -19,8 +19,6 @@ exports.selectArticleById = async (article_id) => {
       msg: "Not found - there is not an article with selected article_id",
     });
   }
-
-  results.rows[0].comment_count = Number(count.rows[0].count);
   return results.rows[0];
 };
 
@@ -74,7 +72,8 @@ exports.selectArticles = async (
     total_count = Number(countQuery.rows[0].count);
   } else {
     const countQuery = await db.query(
-      `SELECT COUNT(article_id) FROM articles WHERE topic = $1;`, [topic]
+      `SELECT COUNT(article_id) FROM articles WHERE topic = $1;`,
+      [topic]
     );
     total_count = Number(countQuery.rows[0].count);
   }
@@ -133,7 +132,7 @@ exports.selectArticles = async (
 
   if (topic) {
     const articles = await db.query(queryString, [topic]);
-    return {articles: articles.rows, total_count};
+    return { articles: articles.rows, total_count };
   } else {
     const articles = await db.query(queryString);
     return { articles: articles.rows, total_count };
@@ -205,13 +204,16 @@ exports.insertArticleComments = async (article_id, username, body) => {
 exports.insertArticle = async (author, title, body, topic) => {
   const votes = 0;
   const comment_count = 0;
-  const newArticle = await db.query(`INSERT INTO articles 
+  const newArticle = await db.query(
+    `INSERT INTO articles 
   (author, title, body, topic, votes)
   VALUES ($1, $2, $3, $4, $5) 
-  RETURNING *`, [author, title, body, topic, votes])
-  newArticle.rows[0].comment_count = 0
-  return newArticle.rows[0]
-}
+  RETURNING *`,
+    [author, title, body, topic, votes]
+  );
+  newArticle.rows[0].comment_count = 0;
+  return newArticle.rows[0];
+};
 
 exports.removeArticleById = async (article_id) => {
   // check if article exists
@@ -224,7 +226,8 @@ exports.removeArticleById = async (article_id) => {
   }
 
   const deletedArticle = await db.query(
-    `DELETE FROM articles WHERE article_id = $1 RETURNING *;`,[article_id]
-    )
-  return deletedArticle.rows[0]
-}
+    `DELETE FROM articles WHERE article_id = $1 RETURNING *;`,
+    [article_id]
+  );
+  return deletedArticle.rows[0];
+};
