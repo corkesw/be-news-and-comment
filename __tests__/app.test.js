@@ -99,7 +99,7 @@ describe("GET /api/articles/:article_id", () => {
 });
 
 describe("PATCH /api/articles/:article_id", () => {
-  test("200: should return an updated object", () => {
+  test("200: should return an up object with updated votes", () => {
     return request(app)
       .patch("/api/articles/10")
       .send({ inc_votes: 100 })
@@ -108,13 +108,22 @@ describe("PATCH /api/articles/:article_id", () => {
         expect(res.body.updatedArticle.votes).toBe(100);
       });
   });
+  test('200: should return an object with updated body', () => {
+    return request(app)
+    .patch("/api/articles/1")
+    .send({body: 'blah, blah, blah'})
+    .expect(200)
+    .then((res) => {
+      expect(res.body.updatedArticle.body).toBe('blah, blah, blah')
+    })
+  });
   test("400: should return error if article_id is not a number", () => {
     return request(app)
       .patch("/api/articles/ten")
       .send({ inc_votes: 100 })
       .expect(400)
       .then((res) => {
-        expect(res.body.msg).toBe("Bad request - article_id must be a number");
+        expect(res.body.msg).toBe("Invalid input");
       });
   });
   test("404: should return error if path and request are valid but there is no article with that id", () => {
@@ -666,3 +675,4 @@ describe("DELETE /api/articles/:article_id", () => {
       });
   });
 });
+

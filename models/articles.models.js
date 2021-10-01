@@ -22,9 +22,26 @@ exports.selectArticleById = async (article_id) => {
   return results.rows[0];
 };
 
-exports.updateArticleById = async (article_id, inc_votes) => {
+exports.updateArticleById = async (article_id, inc_votes, body) => {
+  
+  let updatedArticle
+
+  if(body) { 
+    updatedArticle = await db.query(
+      `UPDATE articles SET body = $1 WHERE article_id = $2 RETURNING *`,
+      [body, article_id]
+    );
+  }
+
+  if(inc_votes) {
+    updatedArticle = await db.query(
+      `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`,
+      [inc_votes, article_id]
+    );
+  }
+
   // handle missing parameters in request body
-  if (!inc_votes) {
+  if (!inc_votes && !body) {
     return Promise.reject({
       status: 422,
       msg: "Unprocessable Entity, error in request body",
@@ -38,10 +55,11 @@ exports.updateArticleById = async (article_id, inc_votes) => {
       msg: "Bad request - article_id must be a number",
     });
   }
-  const updatedArticle = await db.query(
-    `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`,
-    [inc_votes, article_id]
-  );
+
+  // const updatedArticle = await db.query(
+  //   `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`,
+  //   [inc_votes, article_id]
+  // );
 
   // handle non-existent article_id
   if (!updatedArticle.rows.length) {
