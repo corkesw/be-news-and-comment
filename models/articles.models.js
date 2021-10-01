@@ -179,8 +179,8 @@ exports.insertArticleComments = async (article_id, username, body) => {
   const userExists = await checkExists("users", "username", username);
   if (!userExists) {
     return Promise.reject({
-      status: 403,
-      msg: "User does not exist - comment has been rejected",
+      status: 404,
+      msg: "User not found",
     });
   }
 
