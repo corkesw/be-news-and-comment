@@ -48,19 +48,6 @@ exports.updateArticleById = async (article_id, inc_votes, body) => {
     });
   }
 
-  // handle malformed article_id
-  if (isNaN(article_id)) {
-    return Promise.reject({
-      status: 400,
-      msg: "Bad request - article_id must be a number",
-    });
-  }
-
-  // const updatedArticle = await db.query(
-  //   `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`,
-  //   [inc_votes, article_id]
-  // );
-
   // handle non-existent article_id
   if (!updatedArticle.rows.length) {
     return Promise.reject({
@@ -211,10 +198,11 @@ exports.insertArticleComments = async (article_id, username, body) => {
   }
 
   // create new comment
+  console.log(body, username, article_id)
   const created_at = new Date();
   const postedComment = await db.query(
-    `INSERT INTO comments (body, votes, author, article_id) VALUES ($1, 0, $2, $3) RETURNING *`,
-    [body, username, article_id]
+    `INSERT INTO comments (body, votes, author, article_id, created_at) VALUES ($1, 0, $2, $3, $4) RETURNING *`,
+    [body, username, article_id, created_at]
   );
   return postedComment.rows[0];
 };
