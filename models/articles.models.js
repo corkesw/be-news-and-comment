@@ -210,12 +210,13 @@ exports.insertArticleComments = async (article_id, username, body) => {
 exports.insertArticle = async (author, title, body, topic) => {
   const votes = 0;
   const comment_count = 0;
+  const created_at = new Date();
   const newArticle = await db.query(
     `INSERT INTO articles 
-  (author, title, body, topic, votes)
-  VALUES ($1, $2, $3, $4, $5) 
+  (author, title, body, topic, votes, created_at)
+  VALUES ($1, $2, $3, $4, $5, $6) 
   RETURNING *`,
-    [author, title, body, topic, votes]
+    [author, title, body, topic, votes, created_at]
   );
   newArticle.rows[0].comment_count = 0;
   return newArticle.rows[0];
