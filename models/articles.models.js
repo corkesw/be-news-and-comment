@@ -198,7 +198,6 @@ exports.insertArticleComments = async (article_id, username, body) => {
   }
 
   // create new comment
-  console.log(body, username, article_id)
   const created_at = new Date();
   const postedComment = await db.query(
     `INSERT INTO comments (body, votes, author, article_id, created_at) VALUES ($1, 0, $2, $3, $4) RETURNING *`,
