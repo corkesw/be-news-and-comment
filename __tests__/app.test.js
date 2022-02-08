@@ -108,14 +108,14 @@ describe("PATCH /api/articles/:article_id", () => {
         expect(res.body.updatedArticle.votes).toBe(100);
       });
   });
-  test('200: should return an object with updated body', () => {
+  test("200: should return an object with updated body", () => {
     return request(app)
-    .patch("/api/articles/1")
-    .send({body: 'blah, blah, blah'})
-    .expect(200)
-    .then((res) => {
-      expect(res.body.updatedArticle.body).toBe('blah, blah, blah')
-    })
+      .patch("/api/articles/1")
+      .send({ body: "blah, blah, blah" })
+      .expect(200)
+      .then((res) => {
+        expect(res.body.updatedArticle.body).toBe("blah, blah, blah");
+      });
   });
   test("400: should return error if article_id is not a number", () => {
     return request(app)
@@ -228,11 +228,12 @@ describe("GET /api/articles", () => {
         expect(res.body.articles).toHaveLength(5);
       });
   });
-  test("200: should return the correct page when passed a p query", () => {
+  test.only("200: should return the correct page when passed a p query", () => {
     return request(app)
-      .get("/api/articles?limit=5&p=2")
+      .get("/api/articles?limit=5&p=20")
       .expect(200)
       .then((res) => {
+        console.log(res.body);
         expect(res.body.articles[0]).toEqual(
           expect.objectContaining({
             author: "butter_bridge",
@@ -675,4 +676,3 @@ describe("DELETE /api/articles/:article_id", () => {
       });
   });
 });
-
