@@ -228,12 +228,11 @@ describe("GET /api/articles", () => {
         expect(res.body.articles).toHaveLength(5);
       });
   });
-  test.only("200: should return the correct page when passed a p query", () => {
+  test("200: should return the correct page when passed a p query", () => {
     return request(app)
-      .get("/api/articles?limit=5&p=20")
+      .get("/api/articles?limit=5&p=2")
       .expect(200)
       .then((res) => {
-        console.log(res.body);
         expect(res.body.articles[0]).toEqual(
           expect.objectContaining({
             author: "butter_bridge",
