@@ -10,7 +10,7 @@
     "dump": "psql -f ./datadump.sql > data.text",
     "seed-prod": "NODE_ENV=production npm run seed",
     "start": "node listen.js",
-    "prepare": "husky"
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
